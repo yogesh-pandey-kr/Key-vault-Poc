@@ -7,6 +7,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
+import com.azure.security.keyvault.secrets.models.SecretProperties;
 
 public class kvServiceImpl {
 	
@@ -38,6 +39,17 @@ public class kvServiceImpl {
 		
 		KeyVaultSecret secret = secretClient.setSecret(secretName,secretValue);
 		System.out.printf("Secret created with name \"%s\" and value \"%s\"%n", secret.getName(), secret.getValue());
+		
+	}
+	
+	public void listAllSecrets() {
+		// List operations don't return the secrets with value information. So, for each returned secret we call getSecret to
+		// get the secret with its value information.
+		for (SecretProperties secretProperties : secretClient.listPropertiesOfSecrets()) {
+		    KeyVaultSecret secretWithValue = secretClient.getSecret(secretProperties.getName(), secretProperties.getVersion());
+		    System.out.printf("Retrieved secret with name \"%s\" and value \"%s\"%n", secretWithValue.getName(),
+		        secretWithValue.getValue());
+		}
 		
 	}
 	
